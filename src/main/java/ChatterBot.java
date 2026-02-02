@@ -7,12 +7,14 @@ public class ChatterBot {
 
         Scanner scanner = new Scanner(System.in);
 
-        String[] tasks = new String[100];
-        boolean[] isDone = new boolean[100];
+
+        Task[] tasks = new Task[100];
         int taskCount = 0;
 
+
+
         while (true){
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().trim();
 
             if (input.equals("bye")){
                 System.out.println("Goodbye!");
@@ -22,47 +24,59 @@ public class ChatterBot {
             if (input.equals("list")){
                 System.out.println("Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++){
-                    System.out.print((i + 1) + ".[" + (isDone[i] ? "X" : " ") + "] " + tasks[i] + "\n");
+                    System.out.println((i + 1) + "." + tasks[i] + "\n");
                 }
                 continue;
             }
 
-             if (input.startsWith("mark ")) {
-                int index = parseIndex(input, "mark ");
-                if (index >= 1 && index <= taskCount) {
-                    isDone[index - 1] = true;
-                    System.out.println("Nice! I've marked this task as done:");
-                    System.out.println("  [" + (isDone[index - 1] ? "X" : " ") + "] " + tasks[index - 1]);
-                }
+            if (input.startsWith("mark ")) {
+                int index = Integer.parseInt(input.substring(5));
+                tasks[index - 1].markDone();
+                System.out.println("OK. I've marked this task as done:");
+                System.out.println("  " + tasks[index - 1]);
                 continue;
             }
 
             if (input.startsWith("unmark ")) {
-                int index = parseIndex(input, "unmark ");
-                if (index >= 1 && index <= taskCount) {
-                    isDone[index - 1] = false;
-                    System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println("  [" + (isDone[index - 1] ? "X" : " ") + "] " + tasks[index - 1]);
-                }
+                int index = Integer.parseInt(input.substring(7));
+                tasks[index - 1].markNotDone();
+                System.out.println("OK. I've marked this task as not done yet:");
+                System.out.println("  " + tasks[index - 1]);
                 continue;
             }
 
-            tasks[taskCount] = input;
-            isDone[taskCount] = false;
-            taskCount++;
+            if (input.startsWith("todo ")) {
+                tasks[taskCount++] = new Todo(input.substring(5));
+                printAdded(tasks[taskCount - 1], taskCount);
+                continue;
+            }
 
-            System.out.println("added: " + input);
+            if (input.startsWith("deadline ")) {
+                int byPos = input.indexOf(" /by ");
+                String desc = input.substring(9, byPos);
+                String by = input.substring(byPos + 5);
+                tasks[taskCount++] = new Deadline(desc, by);
+                printAdded(tasks[taskCount - 1], taskCount);
+                continue;
+            }
+
+            if (input.startsWith("event ")) {
+                int fromPos = input.indexOf(" /from ");
+                int toPos = input.indexOf(" /to ");
+                String desc = input.substring(6, fromPos);
+                String from = input.substring(fromPos + 7, toPos);
+                String to = input.substring(toPos + 5);
+                tasks[taskCount++] = new Event(desc, from, to);
+                printAdded(tasks[taskCount - 1], taskCount);
+            }
         }
 
         scanner.close();
     }
 
-    private static int parseIndex(String input, String command) {
-        try {
-            return Integer.parseInt(input.substring(command.length()).trim());
-        } catch (NumberFormatException e) {
-            return -1; // Invalid index
-        }
+    private static void printAdded(Task task, int taskCount) {
+        System.out.println("Okay can. I have added this.");
+        System.out.println("  " + task);
+        System.out.println("Now you have " + taskCount + " tasks in the list.");
     }
-
 }
