@@ -13,8 +13,15 @@ public class ChatterBot {
 
 
 
-        while (true){
-            String input = scanner.nextLine().trim();
+        while (true) {
+            String input = scanner.nextLine();
+
+            try {
+                Parser.validate(input);
+            } catch (ChatterBotException e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
 
             if (input.equals("bye")){
                 System.out.println("Goodbye!");

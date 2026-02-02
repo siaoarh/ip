@@ -1,0 +1,22 @@
+public class Errors {
+    public static final String TODO_EMPTY =
+            "Hello! The description of a todo cannot be empty. Please try again.";
+
+    public static final String DEADLINE_EMPTY =
+            "Hello! The description of a deadline cannot be empty. Please try again.";
+
+    public static final String DEADLINE_FORMAT =
+            "Hello! A deadline must have '/by <time>'. Please try again.";
+
+    public static final String EVENT_EMPTY =
+            "Hello! The description of an event cannot be empty. Please try again.";
+
+    public static final String EVENT_FORMAT =
+            "Hello! An event must have '/from <start> /to <end>'. Please try again.";
+
+    public static final String INVALID_INDEX =
+            "Hello! Please provide a valid task number.";
+
+    public static final String UNKNOWN =
+            "Hello! I'm sorry, but I don't know what that means. Please try again.";
+}
