@@ -14,7 +14,7 @@ public class ChatterBot {
 
 
         while (true) {
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().trim();
 
             try {
                 Parser.validate(input);
@@ -52,6 +52,36 @@ public class ChatterBot {
                 continue;
             }
 
+            if (input.startsWith("delete ")) {
+                int index;
+                try {
+                    index = Parser.parseIndex(input, "delete ");
+                } catch (ChatterBotException e) {
+                    System.out.println(e.getMessage());
+                    continue;
+                }
+
+                if (!isValidIndex(index, taskCount)) {
+                    System.out.println(Errors.INDEX_OUT_OF_RANGE);
+                    continue;
+                }
+
+                Task removed = tasks[index - 1];
+
+                for (int i = index - 1; i < taskCount - 1; i++) {
+                    tasks[i] = tasks[i + 1];
+                }
+                tasks[taskCount - 1] = null;
+                taskCount--;
+
+                System.out.println("Noted. I've removed this task:");
+                System.out.println("  " + removed);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
+                continue;
+            }
+
+
+
             if (input.startsWith("todo ")) {
                 tasks[taskCount++] = new Todo(input.substring(5));
                 printAdded(tasks[taskCount - 1], taskCount);
@@ -86,4 +116,9 @@ public class ChatterBot {
         System.out.println("  " + task);
         System.out.println("Now you have " + taskCount + " tasks in the list.");
     }
+
+    private static boolean isValidIndex(int index, int taskCount) {
+        return index >= 1 && index <= taskCount;
+    }
+
 }

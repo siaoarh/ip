@@ -63,7 +63,29 @@ public class Parser {
             return;
         }
 
+        if (trimmed.equals("delete")) {
+            throw new ChatterBotException(Errors.INVALID_INDEX);
+        }
+        if (trimmed.startsWith("delete ")) {
+            parseIndex(trimmed, "delete "); // if bad, it throws
+            return;
+        }
+
+
 
         throw new ChatterBotException(Errors.UNKNOWN);
     }
+
+    public static int parseIndex(String input, String prefix) throws ChatterBotException {
+        String numPart = input.substring(prefix.length()).trim();
+        if (numPart.isEmpty()) {
+            throw new ChatterBotException(Errors.INVALID_INDEX);
+        }
+        try {
+            return Integer.parseInt(numPart);
+        } catch (NumberFormatException e) {
+            throw new ChatterBotException(Errors.INVALID_INDEX);
+        }
+    }
 }
+
