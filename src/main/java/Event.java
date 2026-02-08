@@ -8,9 +8,24 @@ public class Event extends Task {
         this.to = to;
     }
 
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+
     @Override
     protected String typeIcon() {
         return "E";
+    }
+
+    @Override
+    public String toStorageString() {
+        return typeIcon() + " | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;
     }
 
     @Override
