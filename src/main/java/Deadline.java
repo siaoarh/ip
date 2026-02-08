@@ -6,9 +6,18 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    public String getBy() {
+        return by;
+    }
+
     @Override
     protected String typeIcon() {
         return "D";
+    }
+
+    @Override
+    public String toStorageString(){
+        return typeIcon() + " | " + (isDone ? "1" : "0") + " | " + description + " | " + by;
     }
 
     @Override

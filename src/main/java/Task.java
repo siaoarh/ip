@@ -15,11 +15,19 @@ public abstract class Task {
         isDone = false;
     }
 
+    public void setDone(boolean done) {
+        isDone = done;
+    }
+
     protected String statusIcon() {
         return isDone ? "X" : " ";
     }
 
     protected abstract String typeIcon();
+
+    public String toStorageString() {
+        return typeIcon() + " | " + (isDone ? "1" : "0") + " | " + description;
+    }
 
     @Override
     public String toString() {
