@@ -11,7 +11,8 @@ public class ChatterBot {
         Task[] tasks = new Task[100];
         int taskCount = 0;
 
-
+        Storage storage = new Storage();
+        taskCount = storage.load(tasks);
 
         while (true) {
             String input = scanner.nextLine().trim();
