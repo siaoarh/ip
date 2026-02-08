@@ -6,3 +6,10 @@ Now you have 1 tasks in the list.
 Okay can. I have added this.
   [D][ ] grow hair (by: Sunday)
 Now you have 2 tasks in the list.
+Hello! An event must have '/from <start> /to <end>'. Please try again.
+Here are the tasks in your list:
+1.[T][ ] cut hair
+
+2.[D][ ] grow hair (by: Sunday)
+
+Goodbye!
