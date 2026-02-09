@@ -7,11 +7,11 @@ public class ChatterBot {
 
         Scanner scanner = new Scanner(System.in);
 
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
-
         Storage storage = new Storage();
-        taskCount = storage.load(tasks);
+
+        Task[] loadedTasks = new Task[100];
+        int loadedCount = storage.load(loadedTasks);
+        TaskList tasks = new TaskList(loadedTasks, loadedCount);
 
         while (true) {
             String input = scanner.nextLine().trim();
@@ -30,29 +30,35 @@ public class ChatterBot {
 
             if (input.equals("list")){
                 System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++){
-                    System.out.println((i + 1) + "." + tasks[i] + "\n");
+                for (int i = 0; i < tasks.size(); i++){
+                    System.out.println((i + 1) + "." + tasks.getTasks()[i] + "\n");
                 }
                 continue;
             }
 
             if (input.startsWith("mark ")) {
                 int index = Integer.parseInt(input.substring(5));
-                tasks[index - 1].markDone();
-                System.out.println("OK. I've marked this task as done:");
-                System.out.println("  " + tasks[index - 1]);
-
-                storage.save(tasks, taskCount);
+                try {
+                    tasks.mark(index);
+                    System.out.println("OK. I've marked this task as done:");
+                    System.out.println("  " + tasks.get(index));
+                    storage.save(tasks.getTasks(), tasks.size());
+                } catch (ChatterBotException e) {
+                    System.out.println(e.getMessage());
+                }
                 continue;
             }
 
             if (input.startsWith("unmark ")) {
                 int index = Integer.parseInt(input.substring(7));
-                tasks[index - 1].markNotDone();
-                System.out.println("OK. I've marked this task as not done yet:");
-                System.out.println("  " + tasks[index - 1]);
-
-                storage.save(tasks, taskCount);
+                try {
+                    tasks.unmark(index);
+                    System.out.println("OK. I've marked this task as not done yet:");
+                    System.out.println("  " + tasks.get(index));
+                    storage.save(tasks.getTasks(), tasks.size());
+                } catch (ChatterBotException e) {
+                    System.out.println(e.getMessage());
+                }
                 continue;
             }
 
@@ -65,32 +71,22 @@ public class ChatterBot {
                     continue;
                 }
 
-                if (!isValidIndex(index, taskCount)) {
-                    System.out.println(Errors.INDEX_OUT_OF_RANGE);
-                    continue;
+                try {
+                    Task removed = tasks.delete(index);
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removed);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    storage.save(tasks.getTasks(), tasks.size());
+                } catch (ChatterBotException e) {
+                    System.out.println(e.getMessage());
                 }
-
-                Task removed = tasks[index - 1];
-
-                for (int i = index - 1; i < taskCount - 1; i++) {
-                    tasks[i] = tasks[i + 1];
-                }
-                tasks[taskCount - 1] = null;
-                taskCount--;
-
-                System.out.println("Noted. I've removed this task:");
-                System.out.println("  " + removed);
-                System.out.println("Now you have " + taskCount + " tasks in the list.");
-
-                storage.save(tasks, taskCount);
                 continue;
             }
 
             if (input.startsWith("todo ")) {
-                tasks[taskCount++] = new Todo(input.substring(5));
-                printAdded(tasks[taskCount - 1], taskCount);
-
-                storage.save(tasks, taskCount);
+                tasks.add(new Todo(input.substring(5)));
+                printAdded(tasks.getTasks()[tasks.size() - 1], tasks.size());
+                storage.save(tasks.getTasks(), tasks.size());
                 continue;
             }
 
@@ -98,10 +94,9 @@ public class ChatterBot {
                 int byPos = input.indexOf(" /by ");
                 String desc = input.substring(9, byPos);
                 String by = input.substring(byPos + 5);
-                tasks[taskCount++] = new Deadline(desc, by);
-                printAdded(tasks[taskCount - 1], taskCount);
-
-                storage.save(tasks, taskCount);
+                tasks.add(new Deadline(desc, by));
+                printAdded(tasks.getTasks()[tasks.size() - 1], tasks.size());
+                storage.save(tasks.getTasks(), tasks.size());
                 continue;
             }
 
@@ -111,10 +106,9 @@ public class ChatterBot {
                 String desc = input.substring(6, fromPos);
                 String from = input.substring(fromPos + 7, toPos);
                 String to = input.substring(toPos + 5);
-                tasks[taskCount++] = new Event(desc, from, to);
-                printAdded(tasks[taskCount - 1], taskCount);
-
-                storage.save(tasks, taskCount);
+                tasks.add(new Event(desc, from, to));
+                printAdded(tasks.getTasks()[tasks.size() - 1], tasks.size());
+                storage.save(tasks.getTasks(), tasks.size());
                 continue;
             }
         }
@@ -126,9 +120,5 @@ public class ChatterBot {
         System.out.println("Okay can. I have added this.");
         System.out.println("  " + task);
         System.out.println("Now you have " + taskCount + " tasks in the list.");
-    }
-
-    private static boolean isValidIndex(int index, int taskCount) {
-        return index >= 1 && index <= taskCount;
     }
 }
