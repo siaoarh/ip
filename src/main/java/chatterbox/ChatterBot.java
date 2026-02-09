@@ -1,7 +1,11 @@
 package chatterbox;
 
+import chatterbox.command.CheerCommand;
 import chatterbox.command.FindCommand;
 
+/**
+ * Entry point of the ChatterBot application.
+ */
 public class ChatterBot {
     public static void main(String[] args) {
         Ui ui = new Ui();
@@ -41,6 +45,12 @@ public class ChatterBot {
                 String keyword = input.substring(5).trim();
                 FindCommand command = new FindCommand(keyword);
                 command.execute(tasks, ui);
+                continue;
+            }
+
+            if (input.equals("cheer")) {
+                CheerCommand cheerCommand = new CheerCommand();
+                cheerCommand.execute(ui);
                 continue;
             }
 
