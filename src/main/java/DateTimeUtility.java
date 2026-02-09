@@ -25,13 +25,20 @@ public class DateTimeUtility {
             return null;
         }
 
+        String trimmed = input.trim();
+
         try {
-            return LocalDateTime.parse(input.trim(), DATE_TIME_INPUT);
+            return LocalDateTime.parse(trimmed, DATE_TIME_INPUT);
         } catch (DateTimeParseException ignored) {}
 
         try {
-            LocalDate date = LocalDate.parse(input.trim(), DATE_ONLY_INPUT);
+            LocalDate date = LocalDate.parse(trimmed, DATE_ONLY_INPUT);
             return date.atStartOfDay(); // 00:00
+        } catch (DateTimeParseException ignored) {}
+
+        // This is for parsing ISO-8601 styled date-time, learnt from copilot
+        try {
+            return LocalDateTime.parse(trimmed);
         } catch (DateTimeParseException ignored) {}
 
         return null;
