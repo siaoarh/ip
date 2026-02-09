@@ -32,13 +32,13 @@ public class Parser {
             if (desc.isEmpty() || by.isEmpty()) {
                 throw new ChatterBotException(Errors.DEADLINE_FORMAT);
             }
+            if (DateTimeUtility.tryParseUserDateTime(by) == null) {
+                throw new ChatterBotException(Errors.INVALID_DATE_FORMAT);
+            }
             return;
         }
 
 
-        if (trimmed.equals("event")) {
-            throw new ChatterBotException(Errors.EVENT_EMPTY);
-        }
         if (trimmed.startsWith("event ")) {
             int fromPos = trimmed.indexOf(" /from ");
             int toPos = trimmed.indexOf(" /to ");
@@ -50,6 +50,10 @@ public class Parser {
             String to = trimmed.substring(toPos + 5).trim();
             if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
                 throw new ChatterBotException(Errors.EVENT_FORMAT);
+            }
+            if (DateTimeUtility.tryParseUserDateTime(from) == null
+                    || DateTimeUtility.tryParseUserDateTime(to) == null) {
+                throw new ChatterBotException(Errors.INVALID_DATE_FORMAT);
             }
             return;
         }
