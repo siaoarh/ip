@@ -7,7 +7,6 @@ public class ChatterBot {
 
         Scanner scanner = new Scanner(System.in);
 
-
         Task[] tasks = new Task[100];
         int taskCount = 0;
 
@@ -42,6 +41,8 @@ public class ChatterBot {
                 tasks[index - 1].markDone();
                 System.out.println("OK. I've marked this task as done:");
                 System.out.println("  " + tasks[index - 1]);
+
+                storage.save(tasks, taskCount);
                 continue;
             }
 
@@ -50,6 +51,8 @@ public class ChatterBot {
                 tasks[index - 1].markNotDone();
                 System.out.println("OK. I've marked this task as not done yet:");
                 System.out.println("  " + tasks[index - 1]);
+
+                storage.save(tasks, taskCount);
                 continue;
             }
 
@@ -78,14 +81,16 @@ public class ChatterBot {
                 System.out.println("Noted. I've removed this task:");
                 System.out.println("  " + removed);
                 System.out.println("Now you have " + taskCount + " tasks in the list.");
+
+                storage.save(tasks, taskCount);
                 continue;
             }
-
-
 
             if (input.startsWith("todo ")) {
                 tasks[taskCount++] = new Todo(input.substring(5));
                 printAdded(tasks[taskCount - 1], taskCount);
+
+                storage.save(tasks, taskCount);
                 continue;
             }
 
@@ -95,6 +100,8 @@ public class ChatterBot {
                 String by = input.substring(byPos + 5);
                 tasks[taskCount++] = new Deadline(desc, by);
                 printAdded(tasks[taskCount - 1], taskCount);
+
+                storage.save(tasks, taskCount);
                 continue;
             }
 
@@ -106,6 +113,9 @@ public class ChatterBot {
                 String to = input.substring(toPos + 5);
                 tasks[taskCount++] = new Event(desc, from, to);
                 printAdded(tasks[taskCount - 1], taskCount);
+
+                storage.save(tasks, taskCount);
+                continue;
             }
         }
 
@@ -121,5 +131,4 @@ public class ChatterBot {
     private static boolean isValidIndex(int index, int taskCount) {
         return index >= 1 && index <= taskCount;
     }
-
 }

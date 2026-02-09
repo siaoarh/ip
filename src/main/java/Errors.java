@@ -14,4 +14,6 @@ public class Errors {
         public static final String UNKNOWN = "Hello! I'm sorry, but I don't know what that means. Please try again.";
 
         public static final String INDEX_OUT_OF_RANGE = "Hello! That task number does not exist. Please try again.";
+
+        public static final String INVALID_DATE_FORMAT = "Hello! Please use yyyy-MM-dd or yyyy-MM-dd HHmm for dates.";        
 }
