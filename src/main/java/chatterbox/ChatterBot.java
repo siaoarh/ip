@@ -1,7 +1,9 @@
 package chatterbox;
 
+import chatterbox.command.FindCommand;
+
 public class ChatterBot {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Ui ui = new Ui();
         ui.showWelcome();
 
@@ -32,6 +34,13 @@ public class ChatterBot {
                 } catch (ChatterBotException e) {
                     ui.showError(e.getMessage());
                 }
+                continue;
+            }
+
+            if (input.startsWith("find ")) {
+                String keyword = input.substring(5).trim();
+                FindCommand command = new FindCommand(keyword);
+                command.execute(tasks, ui);
                 continue;
             }
 
@@ -104,7 +113,6 @@ public class ChatterBot {
                 tasks.add(new Event(desc, from, to));
                 ui.showAdded(tasks.getTasks()[tasks.size() - 1], tasks.size());
                 storage.save(tasks.getTasks(), tasks.size());
-                continue;
             }
         }
 
