@@ -1,11 +1,30 @@
 package chatterbox;
 
+/**
+ * Validates user commands before execution.
+ */
 public class Parser {
 
+    /**
+     * Validates the user's input command. Throws a ChatterBotException if invalid.
+     *
+     * @param input Raw user input.
+     * @throws ChatterBotException If the input is invalid.
+     */
     public static void validate(String input) throws ChatterBotException {
         String trimmed = input.trim();
 
         if (trimmed.equals("bye") || trimmed.equals("list")) {
+            return;
+        }
+
+        if (trimmed.equals("find")) {
+            throw new ChatterBotException(Errors.FIND_EMPTY);
+        }
+        if (trimmed.startsWith("find ")) {
+            if (trimmed.substring(5).trim().isEmpty()) {
+                throw new ChatterBotException(Errors.FIND_EMPTY);
+            }
             return;
         }
 
@@ -19,7 +38,6 @@ public class Parser {
             }
             return;
         }
-
 
         if (trimmed.equals("deadline")) {
             throw new ChatterBotException(Errors.DEADLINE_EMPTY);
@@ -40,7 +58,9 @@ public class Parser {
             return;
         }
 
-
+        if (trimmed.equals("event")) {
+            throw new ChatterBotException(Errors.EVENT_EMPTY);
+        }
         if (trimmed.startsWith("event ")) {
             int fromPos = trimmed.indexOf(" /from ");
             int toPos = trimmed.indexOf(" /to ");
@@ -60,7 +80,6 @@ public class Parser {
             return;
         }
 
-
         if (trimmed.startsWith("mark ") || trimmed.startsWith("unmark ")) {
             String num = trimmed.replaceAll("\\D+", "");
             if (num.isEmpty()) {
@@ -73,15 +92,21 @@ public class Parser {
             throw new ChatterBotException(Errors.INVALID_INDEX);
         }
         if (trimmed.startsWith("delete ")) {
-            parseIndex(trimmed, "delete "); // if bad, it throws
+            parseIndex(trimmed, "delete ");
             return;
         }
-
-
 
         throw new ChatterBotException(Errors.UNKNOWN);
     }
 
+    /**
+     * Parses a 1-based index from the input after the given prefix.
+     *
+     * @param input Full input string.
+     * @param prefix Command prefix (e.g., "delete ").
+     * @return Parsed integer index.
+     * @throws ChatterBotException If the index is missing or invalid.
+     */
     public static int parseIndex(String input, String prefix) throws ChatterBotException {
         String numPart = input.substring(prefix.length()).trim();
         if (numPart.isEmpty()) {
@@ -94,4 +119,3 @@ public class Parser {
         }
     }
 }
-
