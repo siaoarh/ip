@@ -1,3 +1,5 @@
+package chatterbox;
+
 public class Errors {
         public static final String TODO_EMPTY = "Hello! The description of a todo cannot be empty. Please try again.";
 

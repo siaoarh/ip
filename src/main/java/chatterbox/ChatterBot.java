@@ -1,3 +1,5 @@
+package chatterbox;
+
 public class ChatterBot {
     public static void main(String[] args){
         Ui ui = new Ui();
