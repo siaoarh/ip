@@ -1,3 +1,5 @@
+package chatterbox;
+
 import java.util.Scanner;
 
 public class Ui {

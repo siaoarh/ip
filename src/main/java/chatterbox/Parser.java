@@ -1,3 +1,5 @@
+package chatterbox;
+
 public class Parser {
 
     public static void validate(String input) throws ChatterBotException {
