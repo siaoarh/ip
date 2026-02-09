@@ -80,7 +80,7 @@ public class TaskList {
     }
 
     /**
-     * Marks the task at the given index as not done.
+     * Marks the task at the given index as not done
      *
      * @param index 1-based task number.
      * @throws ChatterBotException If index is invalid.
