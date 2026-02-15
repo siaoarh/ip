@@ -1,4 +1,5 @@
 import chatterbox.ChatterBotCore;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -30,20 +31,33 @@ public class MainWindow extends AnchorPane {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
-    /** Injects the ChatterBotCore instance */
+    /**
+     * Injects the ChatterBotCore instance.
+     *
+     * @param bot Core logic handler.
+     */
     public void setBot(ChatterBotCore bot) {
         this.bot = bot;
     }
 
     @FXML
     private void handleUserInput() {
-        String input = userInput.getText();
+        String input = userInput.getText().trim();
+        if (input.isEmpty()) {
+            userInput.clear();
+            return;
+        }
+
         String response = bot.getResponse(input);
 
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getDukeDialog(response, botImage) // method name can stay for now
+                DialogBox.getDukeDialog(response, botImage)
         );
         userInput.clear();
+
+        if (bot.shouldExit()) {
+            Platform.exit();
+        }
     }
 }

@@ -11,6 +11,7 @@ import chatterbox.command.HelpCommand;
 import chatterbox.command.ListCommand;
 import chatterbox.command.MarkCommand;
 import chatterbox.command.UnmarkCommand;
+import chatterbox.command.ByeCommand;
 
 /**
  * Parses user input into executable Command objects.
@@ -27,6 +28,14 @@ public class Parser {
      */
     public static Command parse(String input) throws ChatterBotException {
         String trimmed = input.trim();
+
+
+        // -----------------------------
+        // GoodBye command
+        // -----------------------------
+        if (trimmed.equals("bye")) {
+            return new ByeCommand();
+        }
 
         // -----------------------------
         // Non-mutating commands
