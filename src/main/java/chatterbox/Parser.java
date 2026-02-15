@@ -14,7 +14,7 @@ public class Parser {
     public static void validate(String input) throws ChatterBotException {
         String trimmed = input.trim();
 
-        if (trimmed.equals("bye") || trimmed.equals("list")) {
+        if (trimmed.equals("bye") || trimmed.equals("list") || trimmed.equals("cheer")) {
             return;
         }
 
