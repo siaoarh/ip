@@ -79,15 +79,7 @@ public class TaskList {
         get(index).markDone();
     }
 
-    /**
-     * Marks the task at the given index as not done
-     *
-     * @param index 1-based task number.
-     * @throws ChatterBotException If index is invalid.
-     */
-    public void unmark(int index) throws ChatterBotException {
-        get(index).markNotDone();
-    }
+
 
     /**
      * Deletes and returns the task at the given index.
@@ -110,6 +102,16 @@ public class TaskList {
         taskCount--;
 
         return removed;
+    }
+
+    /**
+     * Marks the task at the given index as not done.
+     *
+     * @param index 1-based task number.
+     * @throws ChatterBotException If index is invalid.
+     */
+    public void unmark(int index) throws ChatterBotException {
+        get(index).markNotDone();
     }
 
     /**

@@ -4,17 +4,17 @@ import chatterbox.Storage;
 import chatterbox.TaskList;
 
 /**
- * A command that returns an encouraging message.
+ * Represents the exit command.
  */
-public class CheerCommand implements Command {
+public class ByeCommand implements Command {
 
     @Override
     public CommandResult execute(TaskList tasks, Storage storage) {
-        return new CommandResult("You! Can! Do! It!");
+        return new CommandResult("Bye. Hope to see you again soon!", true);
     }
 
     @Override
     public boolean isExit() {
-        return false;
+        return true;
     }
 }

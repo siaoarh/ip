@@ -1,31 +1,44 @@
 package chatterbox.command;
 
+import chatterbox.Storage;
+import chatterbox.Task;
 import chatterbox.TaskList;
-import chatterbox.Ui;
 
 /**
- * Represents a find command that searches tasks by a keyword.
+ * Represents a command that finds tasks whose descriptions contain a given keyword.
  */
-public class FindCommand {
+public class FindCommand implements Command {
+
     private final String keyword;
 
     /**
-     * Construct a FindCommand with the keyword to search for.
+     * Constructs a FindCommand with the keyword to search for.
      *
-     * @param keyword Keyword used to match task descriptions.
+     * @param keyword Keyword to match (non-empty).
      */
     public FindCommand(String keyword) {
         this.keyword = keyword;
     }
 
-    /**
-     * Executes the find command and displays matching tasks.
-     *
-     * @param tasks TaskList to search within.
-     * @param ui Ui used for displaying the output.
-     */
-    public void execute(TaskList tasks, Ui ui) {
+    @Override
+    public CommandResult execute(TaskList tasks, Storage storage) {
         TaskList.FindResult result = tasks.findByKeyword(keyword);
-        ui.showFindResults(result);
+
+        if (result.count == 0) {
+            return new CommandResult("No matching tasks found.");
+        }
+
+        StringBuilder sb = new StringBuilder("Here are the matching tasks:\n");
+        for (int i = 0; i < result.count; i++) {
+            Task match = result.matches[i];
+            sb.append(i + 1).append(". ").append(match).append("\n");
+        }
+
+        return new CommandResult(sb.toString().trim());
+    }
+
+    @Override
+    public boolean isExit() {
+        return false;
     }
 }
