@@ -1,9 +1,62 @@
 package chatterbox;
 
+import chatterbox.command.CheerCommand;
+import chatterbox.command.Command;
+import chatterbox.command.FindCommand;
+import chatterbox.command.HelpCommand;
+import chatterbox.command.ListCommand;
+
 /**
- * Validates user commands before execution.
+ * Parser for user commands.
+ * Handles:
+ * - Validation for CLI-style commands (existing validate method)
+ * - Parsing selected commands into Command objects (Batch A)
  */
 public class Parser {
+
+    /**
+     * Parses the user's input into a Command (Batch A: non-mutating commands only).
+     *
+     * Supported commands:
+     * - list
+     * - cheer
+     * - help
+     * - find <keyword>
+     *
+     * @param input Raw user input.
+     * @return A Command representing the user's input.
+     * @throws ChatterBotException If the input is invalid or unsupported in this batch.
+     */
+    public static Command parse(String input) throws ChatterBotException {
+        String trimmed = input.trim();
+
+        if (trimmed.equals("list")) {
+            return new ListCommand();
+        }
+
+        if (trimmed.equals("cheer")) {
+            return new CheerCommand();
+        }
+
+        if (trimmed.equals("help")) {
+            return new HelpCommand();
+        }
+
+        if (trimmed.equals("find")) {
+            throw new ChatterBotException(Errors.FIND_EMPTY);
+        }
+
+        if (trimmed.startsWith("find ")) {
+            String keyword = trimmed.substring(5).trim();
+            if (keyword.isEmpty()) {
+                throw new ChatterBotException(Errors.FIND_EMPTY);
+            }
+            return new FindCommand(keyword);
+        }
+
+        // Not migrated yet (todo/deadline/event/mark/unmark/delete/bye)
+        throw new ChatterBotException(Errors.UNKNOWN);
+    }
 
     /**
      * Validates the user's input command. Throws a ChatterBotException if invalid.

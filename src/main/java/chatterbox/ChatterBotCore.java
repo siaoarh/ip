@@ -1,5 +1,8 @@
 package chatterbox;
 
+import chatterbox.command.Command;
+import chatterbox.command.CommandResult;
+
 public class ChatterBotCore {
     private final Storage storage;
     private final TaskList tasks;
@@ -14,7 +17,12 @@ public class ChatterBotCore {
     }
 
     public String getResponse(String input) {
-        // Placeholder for Checkpoint 2
-        return "ChatterBot core wired: " + input;
+    try {
+        Command command = Parser.parse(input);
+        CommandResult result = command.execute(tasks, storage);
+        return result.getFeedbackToUser();
+    } catch (ChatterBotException e) {
+        return e.getMessage();
     }
+}
 }
