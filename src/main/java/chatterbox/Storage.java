@@ -9,22 +9,39 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Handles loading and saving tasks to disk.
+ */
 public class Storage {
-    private static final Path FILE_PATH = Paths.get("data", "duke.txt");
 
+    private static final Path DEFAULT_FILE_PATH = Paths.get("data", "duke.txt");
+    private final Path filePath;
+
+    /**
+     * Creates a Storage using the default data file path.
+     */
     public Storage() {
+        this(DEFAULT_FILE_PATH);
+    }
+
+    /**
+     * Creates a Storage using a custom file path (useful for testing).
+     *
+     * @param filePath Path to the storage file.
+     */
+    public Storage(Path filePath) {
+        this.filePath = filePath;
         ensureFileExists();
     }
 
     private void ensureFileExists() {
         try {
-            Path parent = FILE_PATH.getParent();
+            Path parent = filePath.getParent();
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            if (!Files.exists(FILE_PATH)) {
-                Files.createFile(FILE_PATH);
+            if (!Files.exists(filePath)) {
+                Files.createFile(filePath);
             }
         } catch (IOException e) {
             // in case storage fails, the app will not crash
@@ -37,7 +54,7 @@ public class Storage {
 
         List<String> lines;
         try {
-            lines = Files.readAllLines(FILE_PATH);
+            lines = Files.readAllLines(filePath);
         } catch (IOException e) {
             System.out.println("Warning: I cannot read data file. Starting with empty list.");
             return 0;
@@ -72,10 +89,6 @@ public class Storage {
     }
 
     private Task parseLineToTask(String line) {
-        // Expected formats:
-        // T | 1 | desc
-        // D | 0 | desc | by
-        // E | 0 | desc | from | to
         String[] parts = line.split("\\s*\\|\\s*");
         if (parts.length < 3) {
             return null;
@@ -129,7 +142,7 @@ public class Storage {
         }
 
         try {
-            Files.write(FILE_PATH, lines, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(filePath, lines, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             System.out.println("Warning: I cannot save tasks: " + e.getMessage());
         }
