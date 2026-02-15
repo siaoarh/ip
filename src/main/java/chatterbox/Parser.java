@@ -5,17 +5,16 @@ import chatterbox.command.AddEventCommand;
 import chatterbox.command.AddTodoCommand;
 import chatterbox.command.CheerCommand;
 import chatterbox.command.Command;
+import chatterbox.command.DeleteCommand;
 import chatterbox.command.FindCommand;
 import chatterbox.command.HelpCommand;
 import chatterbox.command.ListCommand;
+import chatterbox.command.MarkCommand;
+import chatterbox.command.UnmarkCommand;
 
 /**
- * Parses user input into executable command objects.
- * Currently supports:
- * - Non-mutating commands: list, find, cheer, help
- * - Add commands: todo, deadline, event
- *
- * Other commands (mark/unmark/delete/bye) will be migrated in later batches.
+ * Parses user input into executable Command objects.
+ * Handles all migrated commands (non-mutating, add, and index-mutating).
  */
 public class Parser {
 
@@ -23,14 +22,14 @@ public class Parser {
      * Parses the user's input into a Command.
      *
      * @param input Raw user input.
-     * @return A Command representing the user's input.
-     * @throws ChatterBotException If the input is invalid or unsupported.
+     * @return A Command representing the user's request.
+     * @throws ChatterBotException If the input is invalid.
      */
     public static Command parse(String input) throws ChatterBotException {
         String trimmed = input.trim();
 
         // -----------------------------
-        // Batch A: non-mutating commands
+        // Non-mutating commands
         // -----------------------------
         if (trimmed.equals("list")) {
             return new ListCommand();
@@ -57,10 +56,9 @@ public class Parser {
         }
 
         // -----------------------------
-        // Batch B: add commands
+        // Add commands
         // -----------------------------
 
-        // todo <description>
         if (trimmed.equals("todo")) {
             throw new ChatterBotException(Errors.TODO_EMPTY);
         }
@@ -72,7 +70,6 @@ public class Parser {
             return new AddTodoCommand(desc);
         }
 
-        // deadline <description> /by <time>
         if (trimmed.equals("deadline")) {
             throw new ChatterBotException(Errors.DEADLINE_EMPTY);
         }
@@ -95,7 +92,6 @@ public class Parser {
             return new AddDeadlineCommand(desc, by);
         }
 
-        // event <description> /from <start> /to <end>
         if (trimmed.equals("event")) {
             throw new ChatterBotException(Errors.EVENT_EMPTY);
         }
@@ -122,120 +118,59 @@ public class Parser {
             return new AddEventCommand(desc, from, to);
         }
 
-        // Not migrated yet (mark/unmark/delete/bye)
-        throw new ChatterBotException(Errors.UNKNOWN);
-    }
+        // -----------------------------
+        // Index-mutating commands
+        // -----------------------------
 
-    /**
-     * Legacy validation method retained for incremental migration.
-     * (Still used by older code paths / later batches if needed.)
-     *
-     * @param input Raw user input.
-     * @throws ChatterBotException If the input is invalid.
-     */
-    public static void validate(String input) throws ChatterBotException {
-        String trimmed = input.trim();
-
-        if (trimmed.equals("bye") || trimmed.equals("list") || trimmed.equals("cheer")) {
-            return;
+        if (trimmed.equals("mark")) {
+            throw new ChatterBotException(Errors.INVALID_INDEX);
+        }
+        if (trimmed.startsWith("mark ")) {
+            int index = parseRequiredIndex(trimmed, "mark ");
+            return new MarkCommand(index);
         }
 
-        if (trimmed.equals("find")) {
-            throw new ChatterBotException(Errors.FIND_EMPTY);
+        if (trimmed.equals("unmark")) {
+            throw new ChatterBotException(Errors.INVALID_INDEX);
         }
-        if (trimmed.startsWith("find ")) {
-            if (trimmed.substring(5).trim().isEmpty()) {
-                throw new ChatterBotException(Errors.FIND_EMPTY);
-            }
-            return;
-        }
-
-        // ----- todo -----
-        if (trimmed.equals("todo")) {
-            throw new ChatterBotException(Errors.TODO_EMPTY);
-        }
-        if (trimmed.startsWith("todo ")) {
-            if (trimmed.substring(5).trim().isEmpty()) {
-                throw new ChatterBotException(Errors.TODO_EMPTY);
-            }
-            return;
-        }
-
-        if (trimmed.equals("deadline")) {
-            throw new ChatterBotException(Errors.DEADLINE_EMPTY);
-        }
-        if (trimmed.startsWith("deadline ")) {
-            int byPos = trimmed.indexOf(" /by ");
-            if (byPos == -1) {
-                throw new ChatterBotException(Errors.DEADLINE_FORMAT);
-            }
-            String desc = trimmed.substring(9, byPos).trim();
-            String by = trimmed.substring(byPos + 5).trim();
-            if (desc.isEmpty() || by.isEmpty()) {
-                throw new ChatterBotException(Errors.DEADLINE_FORMAT);
-            }
-            if (DateTimeUtility.tryParseUserDateTime(by) == null) {
-                throw new ChatterBotException(Errors.INVALID_DATE_FORMAT);
-            }
-            return;
-        }
-
-        if (trimmed.equals("event")) {
-            throw new ChatterBotException(Errors.EVENT_EMPTY);
-        }
-        if (trimmed.startsWith("event ")) {
-            int fromPos = trimmed.indexOf(" /from ");
-            int toPos = trimmed.indexOf(" /to ");
-            if (fromPos == -1 || toPos == -1 || toPos <= fromPos) {
-                throw new ChatterBotException(Errors.EVENT_FORMAT);
-            }
-            String desc = trimmed.substring(6, fromPos).trim();
-            String from = trimmed.substring(fromPos + 7, toPos).trim();
-            String to = trimmed.substring(toPos + 5).trim();
-            if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                throw new ChatterBotException(Errors.EVENT_FORMAT);
-            }
-            if (DateTimeUtility.tryParseUserDateTime(from) == null
-                    || DateTimeUtility.tryParseUserDateTime(to) == null) {
-                throw new ChatterBotException(Errors.INVALID_DATE_FORMAT);
-            }
-            return;
-        }
-
-        if (trimmed.startsWith("mark ") || trimmed.startsWith("unmark ")) {
-            String num = trimmed.replaceAll("\\D+", "");
-            if (num.isEmpty()) {
-                throw new ChatterBotException(Errors.INVALID_INDEX);
-            }
-            return;
+        if (trimmed.startsWith("unmark ")) {
+            int index = parseRequiredIndex(trimmed, "unmark ");
+            return new UnmarkCommand(index);
         }
 
         if (trimmed.equals("delete")) {
             throw new ChatterBotException(Errors.INVALID_INDEX);
         }
         if (trimmed.startsWith("delete ")) {
-            parseIndex(trimmed, "delete ");
-            return;
+            int index = parseRequiredIndex(trimmed, "delete ");
+            return new DeleteCommand(index);
         }
 
         throw new ChatterBotException(Errors.UNKNOWN);
     }
 
     /**
-     * Parses a 1-based index from the input after the given prefix.
+     * Parses a required integer index from the input.
      *
-     * @param input Full input string.
-     * @param prefix Command prefix (e.g., "delete ").
-     * @return Parsed integer index.
-     * @throws ChatterBotException If the index is missing or invalid.
+     * @param trimmed Full trimmed input.
+     * @param prefix  Command prefix (e.g., "mark ").
+     * @return Parsed 1-based index.
+     * @throws ChatterBotException If the index is invalid.
      */
-    public static int parseIndex(String input, String prefix) throws ChatterBotException {
-        String numPart = input.substring(prefix.length()).trim();
+    private static int parseRequiredIndex(String trimmed, String prefix)
+            throws ChatterBotException {
+
+        String numPart = trimmed.substring(prefix.length()).trim();
         if (numPart.isEmpty()) {
             throw new ChatterBotException(Errors.INVALID_INDEX);
         }
+
         try {
-            return Integer.parseInt(numPart);
+            int index = Integer.parseInt(numPart);
+            if (index <= 0) {
+                throw new ChatterBotException(Errors.INVALID_INDEX);
+            }
+            return index;
         } catch (NumberFormatException e) {
             throw new ChatterBotException(Errors.INVALID_INDEX);
         }
