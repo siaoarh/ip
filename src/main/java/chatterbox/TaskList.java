@@ -13,8 +13,12 @@ public class TaskList {
      * @param capacity Maximum number of tasks.
      */
     public TaskList(int capacity) {
+        assert capacity > 0 : "TaskList capacity must be positive";
+
         this.tasks = new Task[capacity];
         this.taskCount = 0;
+
+        assert taskCount >= 0 && taskCount <= tasks.length : "taskCount out of bounds after init";
     }
 
     /**
@@ -24,6 +28,9 @@ public class TaskList {
      * @param taskCount Number of valid tasks in the array.
      */
     public TaskList(Task[] tasks, int taskCount) {
+        assert tasks != null : "Tasks array cannot be null";
+        assert taskCount >= 0 && taskCount <= tasks.length : "taskCount out of bounds for given array";
+        
         this.tasks = tasks;
         this.taskCount = taskCount;
     }
@@ -57,7 +64,10 @@ public class TaskList {
         if (!isValidIndex(index)) {
             throw new ChatterBotException(Errors.INDEX_OUT_OF_RANGE);
         }
-        return tasks[index - 1];
+
+        Task t = tasks[index - 1];
+        assert t != null : "Task at valid index should not be null";
+        return t;
     }
 
     /**
@@ -66,6 +76,9 @@ public class TaskList {
      * @param task Task to add.
      */
     public void add(Task task) {
+        assert task != null :  "Cannot add null task";
+        assert taskCount < tasks.length : "Cannot add task, TaskList is full";
+
         tasks[taskCount++] = task;
     }
 
