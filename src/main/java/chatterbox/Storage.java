@@ -1,11 +1,9 @@
 package chatterbox;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +32,13 @@ public class Storage {
         ensureFileExists();
     }
 
+    /**
+     * Ensures that the storage file and its parent directories exist.
+     *
+     * Creates the directory structure if necessary and creates the file
+     * if it does not already exist. Any IO exceptions are caught and
+     * reported without terminating the application.
+     */
     private void ensureFileExists() {
         try {
             Path parent = filePath.getParent();
@@ -49,6 +54,16 @@ public class Storage {
         }
     }
 
+    /**
+     * Loads tasks from the storage file into the provided task array.
+     *
+     * Reads each line from the storage file, converts valid lines into
+     * Task objects, and stores them in the given array until capacity
+     * is reached.
+     *
+     * @param tasks The array to populate with loaded tasks.
+     * @return The number of successfully loaded tasks.
+     */
     public int load(Task[] tasks) {
         ensureFileExists();
 
@@ -88,6 +103,19 @@ public class Storage {
         return count;
     }
 
+    /**
+     * Parses a single line from the storage file into a Task object.
+     *
+     * The expected format is:
+     * T | 0/1 | description
+     * D | 0/1 | description | by
+     * E | 0/1 | description | from | to
+     *
+     * If the line format is invalid or corrupted, null is returned.
+     *
+     * @param line A raw line from the storage file.
+     * @return A Task object if parsing succeeds, otherwise null.
+     */
     private Task parseLineToTask(String line) {
         String[] parts = line.split("\\s*\\|\\s*");
         if (parts.length < 3) {
@@ -130,6 +158,15 @@ public class Storage {
         }
     }
 
+    /**
+     * Saves the current tasks to the storage file.
+     *
+     * Writes each task's storage string representation into the file,
+     * overwriting any existing content.
+     *
+     * @param tasks The array containing tasks to save.
+     * @param taskCount The number of valid tasks in the array.
+     */
     public void save(Task[] tasks, int taskCount) {
         ensureFileExists();
 

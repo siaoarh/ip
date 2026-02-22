@@ -1,10 +1,8 @@
 package chatterbox;
-
 import java.time.LocalDateTime;
 
 public class Deadline extends Task {
     private String by;
-
     private LocalDateTime byDateTime;
 
     public Deadline(String description, String by) {
