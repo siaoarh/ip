@@ -27,6 +27,7 @@ public class Parser {
      * @throws ChatterBotException If the input is invalid.
      */
     public static Command parse(String input) throws ChatterBotException {
+        assert input != null : "Parser input cannot be null";
         String trimmed = input.trim();
 
 
@@ -168,6 +169,10 @@ public class Parser {
      */
     private static int parseRequiredIndex(String trimmed, String prefix)
             throws ChatterBotException {
+
+        assert trimmed != null : "Trimmed input cannot be null";
+        assert prefix != null : "Prefix cannot be null";
+        assert trimmed.startsWith(prefix) : "Trimmed input must start with matching prefix";
 
         String numPart = trimmed.substring(prefix.length()).trim();
         if (numPart.isEmpty()) {
