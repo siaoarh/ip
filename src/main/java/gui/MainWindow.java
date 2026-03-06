@@ -29,16 +29,31 @@ public class MainWindow extends AnchorPane {
 
     @FXML
     public void initialize() {
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        // Auto-scroll to bottom when new messages are added, without blocking manual scrolling
+        dialogContainer.heightProperty().addListener((observable, oldValue, newValue) -> {
+            scrollPane.setVvalue(1.0);
+        });
     }
 
     /**
-     * Injects the ChatterBotCore instance.
+     * Injects the ChatterBotCore instance and shows a welcome message.
      *
      * @param bot Core logic handler.
      */
     public void setBot(ChatterBotCore bot) {
         this.bot = bot;
+        showWelcomeMessage();
+    }
+
+    /**
+     * Displays the chatbot's welcome message on startup.
+     */
+    private void showWelcomeMessage() {
+        String welcome = "Welcome to ChatterBox! We are an interactive task tracker."
+                + " Enter the command \"help\" for a list of commands.";
+        dialogContainer.getChildren().add(
+                DialogBox.getDukeDialog(welcome, botImage)
+        );
     }
 
     @FXML
