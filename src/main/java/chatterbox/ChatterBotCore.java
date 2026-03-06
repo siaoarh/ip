@@ -30,9 +30,9 @@ public class ChatterBotCore {
      * Processes user input and returns chatbot response.
      *
      * @param input User input string.
-     * @return Response string for display.
+     * @return BotResponse containing message and error status.
      */
-    public String getResponse(String input) {
+    public BotResponse getResponse(String input) {
         try {
             Command command = Parser.parse(input);
             CommandResult result = command.execute(tasks, storage);
@@ -41,10 +41,10 @@ public class ChatterBotCore {
                 shouldExit = true;
             }
 
-            return result.getFeedbackToUser();
+            return new BotResponse(result.getFeedbackToUser(), result.isError());
 
         } catch (ChatterBotException e) {
-            return e.getMessage();
+            return new BotResponse(e.getMessage(), true);
         }
     }
 

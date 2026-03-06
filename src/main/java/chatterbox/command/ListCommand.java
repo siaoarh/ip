@@ -25,7 +25,7 @@ public class ListCommand implements Command {
                 sb.append(displayIndex).append(". ").append(task).append("\n");
             } catch (ChatterBotException e) {
                 // Should not happen if size() is correct, but handle defensively.
-                return new CommandResult(e.getMessage());
+                return new CommandResult(e.getMessage(), false, true);
             }
         }
 

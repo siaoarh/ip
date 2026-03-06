@@ -32,7 +32,7 @@ public class DeleteCommand implements Command {
                     + "Now you have " + tasks.size() + " tasks in the list.";
             return new CommandResult(message);
         } catch (ChatterBotException e) {
-            return new CommandResult(e.getMessage());
+            return new CommandResult(e.getMessage(), false, true);
         }
     }
 

@@ -24,7 +24,7 @@ public class UnmarkCommand implements Command {
             storage.save(tasks.getTasks(), tasks.size());
             return new CommandResult("OK, I've marked this task as not done yet:\n  " + task);
         } catch (ChatterBotException e) {
-            return new CommandResult(e.getMessage());
+            return new CommandResult(e.getMessage(), false, true);
         }
     }
 

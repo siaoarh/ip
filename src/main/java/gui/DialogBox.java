@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 
 /**
  * Represents a dialog box consisting of an ImageView to represent the speaker's face
@@ -34,6 +35,11 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(img);
+
+        // Apply circular clip to the profile picture
+        double radius = 16.0;
+        Circle clip = new Circle(radius, radius, radius);
+        displayPicture.setClip(clip);
     }
 
     /**
@@ -46,13 +52,40 @@ public class DialogBox extends HBox {
         setAlignment(Pos.TOP_LEFT);
     }
 
+    /**
+     * Creates a user dialog box (right-aligned, no profile picture shown large).
+     */
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        DialogBox db = new DialogBox(text, img);
+        db.getStyleClass().add("user-dialog");
+        db.dialog.getStyleClass().add("user-bubble");
+        // Make user profile picture smaller
+        db.displayPicture.setFitHeight(24.0);
+        db.displayPicture.setFitWidth(24.0);
+        Circle smallClip = new Circle(12.0, 12.0, 12.0);
+        db.displayPicture.setClip(smallClip);
+        return db;
     }
 
+    /**
+     * Creates a bot dialog box (left-aligned with avatar).
+     */
     public static DialogBox getDukeDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
+        DialogBox db = new DialogBox(text, img);
         db.flip();
+        db.getStyleClass().add("bot-dialog");
+        db.dialog.getStyleClass().add("bot-bubble");
+        return db;
+    }
+
+    /**
+     * Creates an error dialog box (left-aligned with distinct error styling).
+     */
+    public static DialogBox getErrorDialog(String text, Image img) {
+        DialogBox db = new DialogBox(text, img);
+        db.flip();
+        db.getStyleClass().add("bot-dialog");
+        db.dialog.getStyleClass().add("error-bubble");
         return db;
     }
 }
