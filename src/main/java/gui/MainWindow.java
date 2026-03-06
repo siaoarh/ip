@@ -1,3 +1,4 @@
+import chatterbox.BotResponse;
 import chatterbox.ChatterBotCore;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -48,11 +49,18 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
-        String response = bot.getResponse(input);
+        BotResponse response = bot.getResponse(input);
+
+        DialogBox botDialog;
+        if (response.isError()) {
+            botDialog = DialogBox.getErrorDialog(response.getMessage(), botImage);
+        } else {
+            botDialog = DialogBox.getDukeDialog(response.getMessage(), botImage);
+        }
 
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getDukeDialog(response, botImage)
+                botDialog
         );
         userInput.clear();
 

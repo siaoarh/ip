@@ -21,6 +21,9 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
+            stage.setTitle("ChatterBox");
+            stage.setMinWidth(300);
+            stage.setMinHeight(400);
 
             fxmlLoader.<MainWindow>getController().setBot(bot); // inject core
             stage.show();

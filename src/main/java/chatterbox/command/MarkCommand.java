@@ -24,7 +24,7 @@ public class MarkCommand implements Command {
             storage.save(tasks.getTasks(), tasks.size());
             return new CommandResult("Nice! I've marked this task as done:\n  " + task);
         } catch (ChatterBotException e) {
-            return new CommandResult(e.getMessage());
+            return new CommandResult(e.getMessage(), false, true);
         }
     }
 
